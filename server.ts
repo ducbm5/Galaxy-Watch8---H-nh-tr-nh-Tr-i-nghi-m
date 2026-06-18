@@ -109,7 +109,7 @@ app.post("/api/submit", async (req, res) => {
   }
 
   const config = readConfig();
-  const gasUrl = config.gasUrl;
+  const gasUrl = process.env.VITE_GAS_URL || process.env.GAS_URL || config.gasUrl || "";
 
   const status = "Thành công";
 

@@ -8,6 +8,7 @@ import AntioxidantView from "./components/AntioxidantView";
 import BiaAnalysisView from "./components/BiaAnalysisView";
 import DeveloperConsole from "./components/DeveloperConsole";
 import SuccessView from "./components/SuccessView";
+import gasConfig from "../gas-config.json";
 
 export default function App() {
   const [step, setStep] = useState<Step>(Step.INFO_FORM);
@@ -112,27 +113,59 @@ export default function App() {
   const handleSubmitExperience = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: name.trim(),
-          phone: phone.trim()
-        })
-      });
+      const payload = {
+        name: name.trim(),
+        phone: phone.trim(),
+        status: "Thành công"
+      };
 
-      if (response.ok) {
-        // Retrieve fresh database entries from local back-end
-        await fetchConfig();
-        setStep(Step.SUCCESS_PAGE);
-      } else {
-        alert("Có lỗi bất thường xảy ra khi lưu thông tin. Thiết bị sẽ tự động ghi nhận ngoại tuyến.");
-        setStep(Step.SUCCESS_PAGE);
+      let modeSelected = "server";
+      let response: Response | undefined;
+
+      try {
+        response = await fetch("/api/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.warn("Express backend submit unavailable, falling back to direct client post:", err);
       }
+
+      // If backend is missing (e.g. 404 on Vercel), failed, or returned HTML instead of JSON, fall back to direct GAS submission
+      const isHtmlResponse = response && response.headers.get("content-type")?.includes("text/html");
+      const isMissingBackend = !response || response.status === 404 || isHtmlResponse;
+
+      if (isMissingBackend) {
+        const directGasUrl = ((((import.meta as any).env?.VITE_GAS_URL) || "") || gasConfig.gasUrl || "").trim();
+        if (directGasUrl) {
+          console.log("Direct client-side post fallback to Google Apps Script:", directGasUrl);
+          await fetch(directGasUrl, {
+            method: "POST",
+            mode: "no-cors", // Crucial for multi-domain redirection without CORS blocks
+            headers: {
+              "Content-Type": "text/plain;charset=UTF-8"
+            },
+            body: JSON.stringify(payload)
+          });
+          modeSelected = "client";
+        } else {
+          throw new Error("Server proxy failed (or returned HTML on static platform) and no client-side direct gasUrl exists in configuration or environment");
+        }
+      } else if (!response.ok) {
+        throw new Error("Server proxy responded with error status: " + response.status);
+      }
+
+      // If the local backend served successfully, fetch config to refresh dev logs
+      if (modeSelected === "server") {
+        await fetchConfig();
+      }
+      setStep(Step.SUCCESS_PAGE);
     } catch (error) {
       console.error("Network or integration error submitting form: ", error);
+      alert("Có lỗi xảy ra khi lưu thông tin. Vui lòng kiểm tra lại URL Apps Script.");
       setStep(Step.SUCCESS_PAGE);
     } finally {
       setIsSubmitting(false);
