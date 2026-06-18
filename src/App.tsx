@@ -192,8 +192,28 @@ export default function App() {
             <div className="flex-1 relative overflow-hidden">
               <AnimatePresence mode="wait">
                 
+                {/* SUBMITTING OVERLAY LOADER */}
+                {isSubmitting && (
+                  <motion.div
+                    key="submitting_loader"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0d16] text-[#eef2f6]"
+                  >
+                    <div className="flex flex-col items-center space-y-4 max-w-xs text-center px-4">
+                      <div className="relative flex items-center justify-center">
+                        <div className="absolute w-16 h-16 bg-cyan-500/15 rounded-full animate-ping" />
+                        <div className="w-12 h-12 rounded-full border-2 border-t-cyan-400 border-r-cyan-400 border-b-slate-800 border-l-slate-800 animate-spin flex items-center justify-center" />
+                      </div>
+                      <h3 className="text-lg font-display font-medium text-white">Đang lưu thông tin...</h3>
+                      <p className="text-xs text-slate-400 font-mono">Đang tiến hành đồng bộ kết quả.</p>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* SCREEN 1: INFORMATION SUBMISSION FORM */}
-                {step === Step.INFO_FORM && (
+                {!isSubmitting && step === Step.INFO_FORM && (
                   <motion.div
                     key="info_form"
                     initial={{ opacity: 0, x: -10 }}
@@ -293,7 +313,7 @@ export default function App() {
                 )}
 
                 {/* SCREEN 2: RUNNING COACH WORKOUT */}
-                {step === Step.RUNNING_COACH && (
+                {!isSubmitting && step === Step.RUNNING_COACH && (
                   <motion.div
                     key="running_coach"
                     initial={{ opacity: 0, x: 15 }}
@@ -306,7 +326,7 @@ export default function App() {
                 )}
 
                 {/* SCREEN 3: ANTIOXIDANT OPTICAL SPECTROSCOPY SCANNER */}
-                {step === Step.ANTIOXIDANT && (
+                {!isSubmitting && step === Step.ANTIOXIDANT && (
                   <motion.div
                     key="antioxidant"
                     initial={{ opacity: 0, x: 15 }}
@@ -319,7 +339,7 @@ export default function App() {
                 )}
 
                 {/* SCREEN 4: BIA ELECTRICAL COMPOSITION SENSOR METRICS */}
-                {step === Step.BIA_ANALYSIS && (
+                {!isSubmitting && step === Step.BIA_ANALYSIS && (
                   <motion.div
                     key="bia"
                     initial={{ opacity: 0, x: 15 }}
@@ -327,96 +347,12 @@ export default function App() {
                     exit={{ opacity: 0, x: -15 }}
                     className="absolute inset-0"
                   >
-                    <BiaAnalysisView onNext={() => setStep(Step.SUBMIT_PAGE)} />
-                  </motion.div>
-                )}
-
-                {/* SCREEN 5: VERIFICATION & COMPLETION SHEET SEND */}
-                {step === Step.SUBMIT_PAGE && (
-                  <motion.div
-                    key="submit_page"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
-                    className="absolute inset-0 flex flex-col justify-between"
-                  >
-                    {/* Scrollable Content wrapper */}
-                    <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5 flex flex-col justify-center">
-                      <div className="text-center space-y-1.5">
-                        <span className="text-xs uppercase tracking-wider font-mono text-cyan-400 font-semibold bg-cyan-950/40 px-3 py-1 rounded-full border border-cyan-800/30 inline-block">
-                          BƯỚC CUỐI CÙNG
-                        </span>
-                        <h2 className="text-2xl font-display font-medium mt-2 text-white tracking-tight">
-                          Xác Nhận Đơn Đăng Ký
-                        </h2>
-                        <p className="text-sm text-slate-400 leading-relaxed px-1">
-                          Bạn đã trải qua đầy đủ 3 trạm đo lường. Hãy gửi thông tin để kết thúc hoạt động.
-                        </p>
-                      </div>
-
-                      {/* Review card containing captured parameters */}
-                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-                        <div className="text-sm text-slate-400 uppercase tracking-widest font-semibold font-mono border-b border-slate-850 pb-2 flex items-center justify-between">
-                          <span>Hồ sơ tham gia</span>
-                          <span className="text-[#10b981] flex items-center gap-1 lowercase font-normal">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" />
-                            đánh giá thành công
-                          </span>
-                        </div>
-
-                        {/* Name segment */}
-                        <div className="flex justify-between items-center py-1">
-                          <span className="text-sm text-slate-400 font-medium">Họ và tên:</span>
-                          <strong className="text-white text-base font-semibold truncate max-w-[200px]">{name}</strong>
-                        </div>
-
-                        {/* Phone segment */}
-                        <div className="flex justify-between items-center py-1">
-                          <span className="text-sm text-slate-400 font-medium">Số điện thoại:</span>
-                          <strong className="text-cyan-400 text-base font-semibold font-mono">{phone}</strong>
-                        </div>
-
-                        {/* Hardcoded status segment */}
-                        <div className="flex justify-between items-center py-1">
-                          <span className="text-sm text-slate-400 font-medium">Trạng thái:</span>
-                          <div className="bg-emerald-950 border border-emerald-800/40 px-2.5 py-1 rounded-md text-xs text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                            <Check className="w-3 h-3 stroke-[3px]" />
-                            <span>Thành công</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Confirmation Button Pinned to bottom */}
-                    <div className="border-t border-slate-900/80 bg-[#0a0d16] px-4 pb-5 pt-3.5 space-y-3 shrink-0">
-                      <div className="bg-cyan-950/20 text-cyan-400 text-xs text-center border border-cyan-900/20 p-2.5 rounded-lg">
-                        🛡️ Thông tin được bảo mật & Lưu trữ tự động.
-                      </div>
-
-                      <button
-                        id="btn-complete-submit"
-                        onClick={handleSubmitExperience}
-                        disabled={isSubmitting}
-                        className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-display font-semibold text-base py-3.5 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 text-center"
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                            <span>Đang ghi nhận thông tin...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Send className="w-4 h-4" />
-                            <span>Hoàn thành & Gửi kết quả</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
+                    <BiaAnalysisView onNext={handleSubmitExperience} />
                   </motion.div>
                 )}
 
                 {/* SCREEN 6: GENERAL SUCCESS */}
-                {step === Step.SUCCESS_PAGE && (
+                {!isSubmitting && step === Step.SUCCESS_PAGE && (
                   <motion.div
                     key="success_page"
                     initial={{ opacity: 0, scale: 0.95 }}
