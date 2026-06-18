@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Smartphone, Check, AlertCircle, Sparkles, Send, RefreshCw, User, Phone, Play, ChevronRight, BookOpen, Layers } from "lucide-react";
+import { Smartphone, Check, AlertCircle, Sparkles, Send, RefreshCw, User, Phone, Play, ChevronRight, BookOpen, Layers, QrCode } from "lucide-react";
 
 import { Step, AppConfig } from "./types";
 import RunningCoachView from "./components/RunningCoachView";
@@ -8,6 +8,8 @@ import AntioxidantView from "./components/AntioxidantView";
 import BiaAnalysisView from "./components/BiaAnalysisView";
 import DeveloperConsole from "./components/DeveloperConsole";
 import SuccessView from "./components/SuccessView";
+import StationLockScreen from "./components/StationLockScreen";
+import StationQRExplorer from "./components/StationQRExplorer";
 import gasConfig from "../gas-config.json";
 
 export default function App() {
@@ -18,6 +20,12 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConsoleOpen, setIsConsoleOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  // Station unlock states
+  const [station1Unlocked, setStation1Unlocked] = useState(false);
+  const [station2Unlocked, setStation2Unlocked] = useState(false);
+  const [station3Unlocked, setStation3Unlocked] = useState(false);
+  const [showQRExplorer, setShowQRExplorer] = useState(false);
 
   const [config, setConfig] = useState<AppConfig>({
     gasUrl: "",
@@ -39,17 +47,60 @@ export default function App() {
 
   useEffect(() => {
     fetchConfig();
+    
+    // Load unlock states from localStorage
+    const s1 = localStorage.getItem("station_1_unlocked") === "true";
+    const s2 = localStorage.getItem("station_2_unlocked") === "true";
+    const s3 = localStorage.getItem("station_3_unlocked") === "true";
+    setStation1Unlocked(s1);
+    setStation2Unlocked(s2);
+    setStation3Unlocked(s3);
+
     // Load cached contact info if available
     const savedName = localStorage.getItem("event_app_name");
     const savedPhone = localStorage.getItem("event_app_phone");
     if (savedName) setName(savedName);
     if (savedPhone) setPhone(savedPhone);
 
-    // Detect admin URL access parameter
+    // Detect admin / dev mode parameters
     const params = new URLSearchParams(window.location.search);
     if (params.get("admin") === "true" || params.get("dev") === "true") {
       setIsAdmin(true);
       setIsConsoleOpen(true);
+    }
+
+    // Detect QR Station scan parameter in URL
+    const stationParam = params.get("station");
+    if (stationParam) {
+      let routeStep: Step | null = null;
+      if (stationParam === "1") {
+        setStation1Unlocked(true);
+        localStorage.setItem("station_1_unlocked", "true");
+        routeStep = Step.RUNNING_COACH;
+      } else if (stationParam === "2") {
+        setStation2Unlocked(true);
+        localStorage.setItem("station_2_unlocked", "true");
+        routeStep = Step.ANTIOXIDANT;
+      } else if (stationParam === "3") {
+        setStation3Unlocked(true);
+        localStorage.setItem("station_3_unlocked", "true");
+        routeStep = Step.BIA_ANALYSIS;
+      }
+
+      // If user scanned a QR code and they already filled in registration earlier,
+      // bring them directly to that challenge! Beautiful and seamless.
+      if (routeStep) {
+        if (savedName && savedPhone) {
+          setStep(routeStep);
+        } else {
+          setStep(Step.INFO_FORM);
+        }
+      }
+
+      // Clean parameter from browser address bar
+      const url = new URL(window.location.href);
+      url.searchParams.delete("station");
+      window.history.replaceState({}, document.title, url.toString());
     }
   }, []);
 
@@ -174,14 +225,35 @@ export default function App() {
 
   const resetAllWorkflow = () => {
     setStep(Step.INFO_FORM);
+    setStation1Unlocked(false);
+    setStation2Unlocked(false);
+    setStation3Unlocked(false);
+    localStorage.removeItem("station_1_unlocked");
+    localStorage.removeItem("station_2_unlocked");
+    localStorage.removeItem("station_3_unlocked");
+    localStorage.removeItem("event_app_name");
+    localStorage.removeItem("event_app_phone");
+    setName("");
+    setPhone("");
   };
 
   return (
-    <div className="h-[100dvh] lg:h-screen w-full bg-[#0a0d16] flex flex-col lg:flex-row font-sans justify-center overflow-hidden">
+    <div className="h-[100dvh] lg:h-screen w-full bg-[#0a0d16] flex flex-col lg:flex-row font-sans justify-center overflow-hidden relative">
       
       {/* 1. Main Viewport Container */}
       <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden h-full">
         
+        {/* Universal Floating QR Code controller for operators/testers */}
+        <div className="absolute top-4 right-4 z-40">
+          <button
+            onClick={() => setShowQRExplorer(true)}
+            className="bg-cyan-950/95 text-cyan-400 hover:bg-cyan-900 border border-cyan-800/60 font-semibold text-xs px-3.5 py-2.5 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.15)] transition duration-200 cursor-pointer flex items-center gap-1.5 backdrop-blur-sm"
+          >
+            <QrCode className="w-4 h-4 animate-pulse text-cyan-400" />
+            <span>Mã QR Trạm Đo 📌</span>
+          </button>
+        </div>
+
         {/* Clean centered mobile container */}
         <div className="relative w-full max-w-md h-full lg:h-[800px] lg:max-h-[90vh] lg:rounded-3xl lg:border lg:border-slate-800/80 bg-[#0a0d16] shadow-2xl flex flex-col overflow-hidden">
           
@@ -321,7 +393,18 @@ export default function App() {
                     exit={{ opacity: 0, x: -15 }}
                     className="absolute inset-0"
                   >
-                    <RunningCoachView onNext={() => setStep(Step.ANTIOXIDANT)} />
+                    {!station1Unlocked ? (
+                      <StationLockScreen
+                        stationId={1}
+                        stationName="Trạm 1: Huấn luyện viên Chạy bộ (Running Coach)"
+                        onUnlock={() => {
+                          setStation1Unlocked(true);
+                          localStorage.setItem("station_1_unlocked", "true");
+                        }}
+                      />
+                    ) : (
+                      <RunningCoachView onNext={() => setStep(Step.ANTIOXIDANT)} />
+                    )}
                   </motion.div>
                 )}
 
@@ -334,7 +417,18 @@ export default function App() {
                     exit={{ opacity: 0, x: -15 }}
                     className="absolute inset-0"
                   >
-                    <AntioxidantView onNext={() => setStep(Step.BIA_ANALYSIS)} />
+                    {!station2Unlocked ? (
+                      <StationLockScreen
+                        stationId={2}
+                        stationName="Trạm 2: Quét Quang phổ Kháng Oxy hóa"
+                        onUnlock={() => {
+                          setStation2Unlocked(true);
+                          localStorage.setItem("station_2_unlocked", "true");
+                        }}
+                      />
+                    ) : (
+                      <AntioxidantView onNext={() => setStep(Step.BIA_ANALYSIS)} />
+                    )}
                   </motion.div>
                 )}
 
@@ -347,7 +441,18 @@ export default function App() {
                     exit={{ opacity: 0, x: -15 }}
                     className="absolute inset-0"
                   >
-                    <BiaAnalysisView onNext={handleSubmitExperience} />
+                    {!station3Unlocked ? (
+                      <StationLockScreen
+                        stationId={3}
+                        stationName="Trạm 3: Đo Phân Tích Thành Phần Cơ Thể BIA"
+                        onUnlock={() => {
+                          setStation3Unlocked(true);
+                          localStorage.setItem("station_3_unlocked", "true");
+                        }}
+                      />
+                    ) : (
+                      <BiaAnalysisView onNext={handleSubmitExperience} />
+                    )}
                   </motion.div>
                 )}
 
@@ -395,6 +500,34 @@ export default function App() {
             onRefresh={fetchConfig}
           />
         </div>
+      )}
+
+      {/* Station QR codes Explorer drawer */}
+      {showQRExplorer && (
+        <StationQRExplorer
+          onClose={() => setShowQRExplorer(false)}
+          unlockedList={{
+            s1: station1Unlocked,
+            s2: station2Unlocked,
+            s3: station3Unlocked
+          }}
+          onUnlockAll={() => {
+            setStation1Unlocked(true);
+            setStation2Unlocked(true);
+            setStation3Unlocked(true);
+            localStorage.setItem("station_1_unlocked", "true");
+            localStorage.setItem("station_2_unlocked", "true");
+            localStorage.setItem("station_3_unlocked", "true");
+          }}
+          onResetAll={() => {
+            setStation1Unlocked(false);
+            setStation2Unlocked(false);
+            setStation3Unlocked(false);
+            localStorage.removeItem("station_1_unlocked");
+            localStorage.removeItem("station_2_unlocked");
+            localStorage.removeItem("station_3_unlocked");
+          }}
+        />
       )}
 
     </div>
