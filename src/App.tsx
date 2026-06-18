@@ -144,50 +144,17 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070a13] flex flex-col lg:flex-row font-sans">
+    <div className="min-h-screen bg-[#0a0d16] flex flex-col lg:flex-row font-sans justify-center">
       
-      {/* 1. Left Section / Main App Wrapper (Displays simulated device) */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 lg:p-8 relative overflow-hidden">
+      {/* 1. Main Viewport Container */}
+      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden">
         
-        {/* Background Atmosphere glow elements */}
-        <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-cyan-900/10 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-purple-900/10 rounded-full blur-[100px] pointer-events-none" />
-
-        {/* Small desktop guide title */}
-        <div className="hidden lg:block text-center mb-6 max-w-md z-15">
-          <h1 className="text-xl font-display font-black text-white tracking-tight flex items-center justify-center gap-2">
-            <span className="text-cyan-400">⚡</span>
-            <span>Mobile Event Companion</span>
-          </h1>
-          <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-            Xem bên dưới là bản xem trước của điện thoại di động dọc. Nhập thông tin của bạn vào màn hình giả lập và kiểm tra trực quan!
-          </p>
-        </div>
-
-        {/* Mobile Device Container Wrapper (Sleek High Fidelity iPhone frame design) */}
-        <div className="relative w-full max-w-[375px] h-[720px] rounded-[48px] bg-[#000000] p-3.5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] border border-slate-800/80 z-20 flex flex-col overflow-hidden">
+        {/* Clean centered mobile container */}
+        <div className="relative w-full max-w-md min-h-screen lg:min-h-[85vh] lg:h-[800px] lg:rounded-3xl lg:border lg:border-slate-800/80 bg-[#0a0d16] shadow-2xl flex flex-col overflow-hidden">
           
-          {/* Top Speaker Ear-piece notch of phone */}
-          <div className="absolute top-0 inset-x-0 flex justify-center z-40">
-            <div className="w-36 h-5 bg-[#000000] rounded-b-2xl flex items-center justify-center">
-              {/* Speaker pill & camera dot */}
-              <div className="w-12 h-1 bg-slate-800 rounded-full mr-2.5" />
-              <div className="w-2.5 h-2.5 bg-slate-900 rounded-full border border-slate-800/60" />
-            </div>
-          </div>
-
           {/* Core mobile screen viewport context */}
-          <div className="flex-1 rounded-[36px] overflow-hidden bg-[#0a0d16] relative flex flex-col shadow-inner">
+          <div className="flex-1 relative flex flex-col">
             
-            {/* Top mobile OS status tray row */}
-            <div className="h-8 pt-2.5 px-6 flex justify-between items-center text-[10px] font-mono text-slate-500 z-30 select-none">
-              <span>9:41 AM</span>
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                <span>5G • 100%</span>
-              </div>
-            </div>
-
             {/* Render sequence screens inside browser view with smooth layout motion transitions */}
             <div className="flex-1 relative overflow-hidden">
               <AnimatePresence mode="wait">
@@ -200,7 +167,7 @@ export default function App() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 10 }}
                     transition={{ duration: 0.25 }}
-                    className="absolute inset-0 flex flex-col justify-between px-5 py-6"
+                    className="absolute inset-0 flex flex-col justify-between px-5 py-8"
                   >
                     {/* Welcome Title details */}
                     <div className="space-y-2 text-center mt-3">
@@ -234,7 +201,7 @@ export default function App() {
                             placeholder="Ví dụ: Nguyễn Văn A"
                             className={`w-full bg-slate-900/60 hover:bg-slate-900 border ${
                               errors.name ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500" : "border-slate-800 focus:border-cyan-500 focus:ring-cyan-500"
-                            } rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder-slate-600`}
+                            } rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder-slate-600`}
                           />
                         </div>
                         {errors.name && (
@@ -262,7 +229,7 @@ export default function App() {
                             placeholder="Ví dụ: 0912345678"
                             className={`w-full bg-slate-900/60 hover:bg-slate-900 border ${
                               errors.phone ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500" : "border-slate-800 focus:border-cyan-500 focus:ring-cyan-500"
-                            } rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder-slate-600`}
+                            } rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder-slate-600`}
                           />
                         </div>
                         {errors.phone && (
@@ -427,11 +394,6 @@ export default function App() {
                 )}
 
               </AnimatePresence>
-            </div>
-
-            {/* Bottom safe indicator spacer line for Apple home bar */}
-            <div className="h-6 flex justify-center items-end pb-2 select-none z-30">
-              <div className="w-28 h-1 bg-slate-800 rounded-full" />
             </div>
 
           </div>
