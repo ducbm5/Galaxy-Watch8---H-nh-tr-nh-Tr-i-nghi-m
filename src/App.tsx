@@ -150,7 +150,7 @@ export default function App() {
       <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden">
         
         {/* Clean centered mobile container */}
-        <div className="relative w-full max-w-md min-h-screen lg:min-h-[85vh] lg:h-[800px] lg:rounded-3xl lg:border lg:border-slate-800/80 bg-[#0a0d16] shadow-2xl flex flex-col overflow-hidden">
+        <div className="relative w-full max-w-md h-[100dvh] lg:h-[800px] lg:min-h-[85vh] lg:rounded-3xl lg:border lg:border-slate-800/80 bg-[#0a0d16] shadow-2xl flex flex-col overflow-hidden">
           
           {/* Core mobile screen viewport context */}
           <div className="flex-1 relative flex flex-col">
@@ -167,82 +167,84 @@ export default function App() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 10 }}
                     transition={{ duration: 0.25 }}
-                    className="absolute inset-0 flex flex-col justify-between px-4 py-4"
+                    className="absolute inset-0 flex flex-col justify-between"
                   >
-                    {/* Welcome Title details */}
-                    <div className="space-y-1.5 text-center mt-2">
-                      <span className="text-xs uppercase tracking-wider font-mono text-cyan-400 bg-cyan-950/40 px-3 py-1 rounded-full border border-cyan-800/30 font-semibold inline-block">
-                        SỰ KIỆN WATCH8 SPORTTECH
-                      </span>
-                      <h2 className="text-2xl font-display font-medium text-white tracking-tight">
-                        Chuỗi Thử Thách Sức Khỏe
-                      </h2>
-                      <p className="text-sm text-slate-400 leading-relaxed px-1">
-                        Đăng ký nhanh thông tin bên dưới để trải nghiệm các tính năng sức khỏe đột phá từ Galaxy Watch8!
-                      </p>
+                    {/* Scrollable content body */}
+                    <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5">
+                      {/* Welcome Title details */}
+                      <div className="space-y-1.5 text-center mt-2">
+                        <span className="text-xs uppercase tracking-wider font-mono text-cyan-400 bg-cyan-950/40 px-3 py-1 rounded-full border border-cyan-800/30 font-semibold inline-block">
+                          SỰ KIỆN WATCH8 SPORTTECH
+                        </span>
+                        <h2 className="text-2xl font-display font-medium text-white tracking-tight">
+                          Chuỗi Thử Thách Sức Khỏe
+                        </h2>
+                        <p className="text-sm text-slate-400 leading-relaxed px-1">
+                          Đăng ký nhanh thông tin bên dưới để trải nghiệm các tính năng sức khỏe đột phá từ Galaxy Watch8!
+                        </p>
+                      </div>
+
+                      <form onSubmit={handleStartExperience} className="space-y-3.5">
+                        {/* Name input */}
+                        <div className="space-y-1">
+                          <label className="text-xs uppercase tracking-wider font-semibold font-mono text-slate-400 block pl-1">
+                            Họ và tên của bạn <span className="text-cyan-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                            <input
+                              type="text"
+                              value={name}
+                              onChange={(e) => {
+                                setName(e.target.value);
+                                if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
+                              }}
+                              placeholder="Ví dụ: Nguyễn Văn A"
+                              className={`w-full bg-slate-900/60 hover:bg-slate-900 border ${
+                                errors.name ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500" : "border-slate-800 focus:border-cyan-500 focus:ring-cyan-500"
+                              } rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder-slate-600`}
+                            />
+                          </div>
+                          {errors.name && (
+                            <div className="flex items-center gap-1 text-rose-450 text-xs pl-1 pt-0.5">
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              <span>{errors.name}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Phone input */}
+                        <div className="space-y-1">
+                          <label className="text-xs uppercase tracking-wider font-semibold font-mono text-slate-400 block pl-1">
+                            Số điện thoại liên hệ <span className="text-cyan-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                            <input
+                              type="tel"
+                              value={phone}
+                              onChange={(e) => {
+                                setPhone(e.target.value);
+                                if (errors.phone) setErrors(prev => ({ ...prev, phone: undefined }));
+                              }}
+                              placeholder="Ví dụ: 0912345678"
+                              className={`w-full bg-slate-900/60 hover:bg-slate-900 border ${
+                                errors.phone ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500" : "border-slate-800 focus:border-cyan-500 focus:ring-cyan-500"
+                              } rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder-slate-600`}
+                            />
+                          </div>
+                          {errors.phone && (
+                            <div className="flex items-center gap-1 text-rose-450 text-xs pl-1 pt-0.5">
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              <span>{errors.phone}</span>
+                            </div>
+                          )}
+                        </div>
+                      </form>
                     </div>
 
-                    {/* Action Form */}
-                    <form onSubmit={handleStartExperience} className="space-y-3.5 my-auto">
-                      {/* Name input */}
-                      <div className="space-y-1">
-                        <label className="text-xs uppercase tracking-wider font-semibold font-mono text-slate-400 block pl-1">
-                          Họ và tên của bạn <span className="text-cyan-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                          <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => {
-                              setName(e.target.value);
-                              if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
-                            }}
-                            placeholder="Ví dụ: Nguyễn Văn A"
-                            className={`w-full bg-slate-900/60 hover:bg-slate-900 border ${
-                              errors.name ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500" : "border-slate-800 focus:border-cyan-500 focus:ring-cyan-500"
-                            } rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder-slate-600`}
-                          />
-                        </div>
-                        {errors.name && (
-                          <div className="flex items-center gap-1 text-rose-450 text-xs pl-1 pt-0.5">
-                            <AlertCircle className="w-3.5 h-3.5" />
-                            <span>{errors.name}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Phone input */}
-                      <div className="space-y-1">
-                        <label className="text-xs uppercase tracking-wider font-semibold font-mono text-slate-400 block pl-1">
-                          Số điện thoại liên hệ <span className="text-cyan-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                          <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => {
-                              setPhone(e.target.value);
-                              if (errors.phone) setErrors(prev => ({ ...prev, phone: undefined }));
-                            }}
-                            placeholder="Ví dụ: 0912345678"
-                            className={`w-full bg-slate-900/60 hover:bg-slate-900 border ${
-                              errors.phone ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500" : "border-slate-800 focus:border-cyan-500 focus:ring-cyan-500"
-                            } rounded-xl pl-10 pr-4 py-3.5 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder-slate-600`}
-                          />
-                        </div>
-                        {errors.phone && (
-                          <div className="flex items-center gap-1 text-rose-450 text-xs pl-1 pt-0.5">
-                            <AlertCircle className="w-3.5 h-3.5" />
-                            <span>{errors.phone}</span>
-                          </div>
-                        )}
-                      </div>
-                    </form>
-
-                    {/* Bottom disclaimer & CTA button */}
-                    <div className="space-y-2.5">
+                    {/* Bottom disclaimer & CTA button Pinned */}
+                    <div className="border-t border-slate-900/80 bg-[#0a0d16] px-4 pb-5 pt-3.5 space-y-2.5 shrink-0">
                       <div className="text-center text-xs text-slate-500 px-3 leading-normal">
                         Bằng việc bấm bắt đầu bạn đồng ý cho phép ứng dụng ghi nhận thông tin trải nghiệm của bạn.
                       </div>
@@ -303,56 +305,59 @@ export default function App() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -15 }}
-                    className="absolute inset-0 flex flex-col justify-between px-4 py-4"
+                    className="absolute inset-0 flex flex-col justify-between"
                   >
-                    <div className="text-center mt-2 space-y-1.5">
-                      <span className="text-xs uppercase tracking-wider font-mono text-cyan-400 font-semibold bg-cyan-950/40 px-3 py-1 rounded-full border border-cyan-800/30 inline-block">
-                        BƯỚC CUỐI CÙNG
-                      </span>
-                      <h2 className="text-2xl font-display font-medium mt-2 text-white tracking-tight">
-                        Xác Nhận Đơn Đăng Ký
-                      </h2>
-                      <p className="text-sm text-slate-400 leading-relaxed px-1">
-                        Bạn đã trải qua đầy đủ 3 trạm đo lường. Hãy gửi thông tin để kết thúc hoạt động.
-                      </p>
-                    </div>
-
-                    {/* Review card containing captured parameters */}
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 my-auto space-y-3">
-                      <div className="text-sm text-slate-400 uppercase tracking-widest font-semibold font-mono border-b border-slate-850 pb-2 flex items-center justify-between">
-                        <span>Hồ sơ tham gia</span>
-                        <span className="text-[#10b981] flex items-center gap-1 lowercase font-normal">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" />
-                          đánh giá thành công
+                    {/* Scrollable Content wrapper */}
+                    <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5 flex flex-col justify-center">
+                      <div className="text-center space-y-1.5">
+                        <span className="text-xs uppercase tracking-wider font-mono text-cyan-400 font-semibold bg-cyan-950/40 px-3 py-1 rounded-full border border-cyan-800/30 inline-block">
+                          BƯỚC CUỐI CÙNG
                         </span>
+                        <h2 className="text-2xl font-display font-medium mt-2 text-white tracking-tight">
+                          Xác Nhận Đơn Đăng Ký
+                        </h2>
+                        <p className="text-sm text-slate-400 leading-relaxed px-1">
+                          Bạn đã trải qua đầy đủ 3 trạm đo lường. Hãy gửi thông tin để kết thúc hoạt động.
+                        </p>
                       </div>
 
-                      {/* Name segment */}
-                      <div className="flex justify-between items-center py-1">
-                        <span className="text-sm text-slate-400 font-medium">Họ và tên:</span>
-                        <strong className="text-white text-base font-semibold truncate max-w-[200px]">{name}</strong>
-                      </div>
+                      {/* Review card containing captured parameters */}
+                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+                        <div className="text-sm text-slate-400 uppercase tracking-widest font-semibold font-mono border-b border-slate-850 pb-2 flex items-center justify-between">
+                          <span>Hồ sơ tham gia</span>
+                          <span className="text-[#10b981] flex items-center gap-1 lowercase font-normal">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" />
+                            đánh giá thành công
+                          </span>
+                        </div>
 
-                      {/* Phone segment */}
-                      <div className="flex justify-between items-center py-1">
-                        <span className="text-sm text-slate-400 font-medium">Số điện thoại:</span>
-                        <strong className="text-cyan-400 text-base font-semibold font-mono">{phone}</strong>
-                      </div>
+                        {/* Name segment */}
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-sm text-slate-400 font-medium">Họ và tên:</span>
+                          <strong className="text-white text-base font-semibold truncate max-w-[200px]">{name}</strong>
+                        </div>
 
-                      {/* Hardcoded status segment */}
-                      <div className="flex justify-between items-center py-1">
-                        <span className="text-sm text-slate-400 font-medium">Trạng thái:</span>
-                        <div className="bg-emerald-950 border border-emerald-800/40 px-2.5 py-1 rounded-md text-xs text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                          <Check className="w-3 h-3 stroke-[3px]" />
-                          <span>Thành công</span>
+                        {/* Phone segment */}
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-sm text-slate-400 font-medium">Số điện thoại:</span>
+                          <strong className="text-cyan-400 text-base font-semibold font-mono">{phone}</strong>
+                        </div>
+
+                        {/* Hardcoded status segment */}
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-sm text-slate-400 font-medium">Trạng thái:</span>
+                          <div className="bg-emerald-950 border border-emerald-800/40 px-2.5 py-1 rounded-md text-xs text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                            <Check className="w-3 h-3 stroke-[3px]" />
+                            <span>Thành công</span>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Confirmation Button */}
-                    <div className="space-y-3">
+                    {/* Confirmation Button Pinned to bottom */}
+                    <div className="border-t border-slate-900/80 bg-[#0a0d16] px-4 pb-5 pt-3.5 space-y-3 shrink-0">
                       <div className="bg-cyan-950/20 text-cyan-400 text-xs text-center border border-cyan-900/20 p-2.5 rounded-lg">
-                        🛡️ Thông tin được bảo mật & lưu trữ tự động.
+                        🛡️ Thông tin được bảo mật & Lưu trữ tự động.
                       </div>
 
                       <button
@@ -364,7 +369,7 @@ export default function App() {
                         {isSubmitting ? (
                           <>
                             <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                            <span>Đăng ghi nhận thông tin...</span>
+                            <span>Đang ghi nhận thông tin...</span>
                           </>
                         ) : (
                           <>
