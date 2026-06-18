@@ -144,13 +144,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0d16] flex flex-col lg:flex-row font-sans justify-center">
+    <div className="h-[100dvh] lg:h-screen w-full bg-[#0a0d16] flex flex-col lg:flex-row font-sans justify-center overflow-hidden">
       
       {/* 1. Main Viewport Container */}
-      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden h-full">
         
         {/* Clean centered mobile container */}
-        <div className="relative w-full max-w-md h-[100dvh] lg:h-[800px] lg:min-h-[85vh] lg:rounded-3xl lg:border lg:border-slate-800/80 bg-[#0a0d16] shadow-2xl flex flex-col overflow-hidden">
+        <div className="relative w-full max-w-md h-full lg:h-[800px] lg:max-h-[90vh] lg:rounded-3xl lg:border lg:border-slate-800/80 bg-[#0a0d16] shadow-2xl flex flex-col overflow-hidden">
           
           {/* Core mobile screen viewport context */}
           <div className="flex-1 relative flex flex-col">
