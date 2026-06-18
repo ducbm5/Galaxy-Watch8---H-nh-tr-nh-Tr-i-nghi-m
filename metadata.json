@@ -1,0 +1,6 @@
+{
+  "name": "Mobile Event Check-in",
+  "description": "A minimalist mobile-only event applet with seamless Google Sheets / Google Apps Script backend integration and simulated offline/developer capabilities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
